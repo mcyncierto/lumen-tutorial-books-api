@@ -1,8 +1,6 @@
 <?php
 
 /** @var \Laravel\Lumen\Routing\Router $router */
-use App\Http\Controllers\BookController;
-use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 $router->get('/books', 'BookController@index');
 $router->post('/books', 'BookController@store');
-$router->get('/books/{book_id}', 'BookController@show');
-$router->put('/books/{book_id}', 'BookController@update');
-$router->patch('/books/{book_id}', 'BookController@update');
-$router->delete('/books/{book_id}', 'BookController@destroy');
+$router->get('/books/{bookId}', 'BookController@show');
+$router->put('/books/{bookId}', 'BookController@update');
+$router->patch('/books/{bookId}', 'BookController@update');
+$router->delete('/books/{bookId}', 'BookController@destroy');

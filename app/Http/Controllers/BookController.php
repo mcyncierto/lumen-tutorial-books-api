@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class BookController extends Controller
 {
@@ -15,8 +17,9 @@ class BookController extends Controller
      */
     public function index()
     {
-        // TO DO
-        return 'Hello World';
+        $books = Book::all();
+
+        return $this->successResponse($books);
     }
 
     /**
@@ -26,7 +29,16 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        // TO DO
+        $rules = [
+            'title' => 'required|max:225',
+            'description' => 'required|max:225',
+            'price' => 'required|min:1',
+            'author_id' => 'required|min:1',
+        ];
+        $this->validate($request, $rules);
+        $book = Book::create($request->all());
+
+        return $this->successResponse($book, Response::HTTP_CREATED);
     }
 
     /**
@@ -34,9 +46,11 @@ class BookController extends Controller
      * 
      * @return Illuminate\Http\Response
      */
-    public function show($authorId)
+    public function show($bookId)
     {
-        // TO DO
+        $book = Book::findOrFail($bookId);
+
+        return $this->successResponse($book);
     }
 
     /**
@@ -44,9 +58,31 @@ class BookController extends Controller
      * 
      * @return Illuminate\Http\Response
      */
-    public function update(Request $request, $authorId)
+    public function update(Request $request, $bookId)
     {
-        // TO DO
+        // (1) Rules
+        $rules = [
+            'title' => 'max:225',
+            'description' => 'max:225',
+            'price' => 'min:1',
+            'author_id' => 'min:1',
+        ];
+        // (2) validate
+        $this->validate($request, $rules);
+        // (3) Find or fail
+        $book = Book::findOrFail($bookId);
+        // (4) Fill
+        $book->fill($request->all());
+        // (5) Check if isClean
+        if ($book->isClean()) {
+            return $this->errorResponse('At least one value must change.', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        // (6) save
+        $book->save();
+
+        // (7) response
+        return $this->successResponse($book);
+        
     }
 
     /**
@@ -54,8 +90,14 @@ class BookController extends Controller
      * 
      * @return Illuminate\Http\Response
      */
-    public function destroy($authorId)
+    public function destroy($bookId)
     {
-        // TO DO
+        // (1) Find or fail
+        $book = Book::findOrFail($bookId);
+        // (2) delete
+        $book->delete();
+
+        // (3) Response
+        return $this->successResponse($book);
     }
 }
